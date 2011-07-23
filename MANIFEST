@@ -9,3 +9,4 @@ META.yml
 t/Net-Backpack.t
 t/pod.t
 t/pod_coverage.t
+META.json
