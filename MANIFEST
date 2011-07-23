@@ -4,7 +4,6 @@ README
 Build.PL
 lib/Net/Backpack.pm
 Makefile.PL
-MANIFEST.SKIP
 META.yml
 t/Net-Backpack.t
 t/pod.t
