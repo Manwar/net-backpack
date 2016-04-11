@@ -1,83 +1,87 @@
-# $Id$
-
 =head1 NAME
 
-Net::Backpack - Perl extension for interfacing with Backpack
+Net::Backpack - Perl extension for interfacing with Backpack.
 
 =head1 SYNOPSIS
 
-  use Net::Backpack;
+    use strict; use warnings;
+    use Net::Backpack;
 
-  my $bp = Net::Backpack(user  => $your_backpack_username,
-                         token => $your_backpack_api_token,
-                         ssl   => $use_ssl);
+    my $bp = Net::Backpack(
+        user  => $your_backpack_username,
+        token => $your_backpack_api_token,
+        ssl   => $use_ssl
+    );
 
-  # Fill out a Perl data structure with information about
-  # your Backspace pages.
-  my $pages = $bp->list_all_pages;
+    # Fill out a Perl data structure with information about your Backspace pages.
+    my $std_pages = $bp->list_all_pages;
 
-  # Alternatively get the same information in XML format
-  # my $pages = $bp->list_all_pages(xml => 1);
+    # Alternatively get the same information in XML format
+    my $xml_pages = $bp->list_all_pages(xml => 1);
 
-  # Create a new page
-  my $page = $bp->create_page(title => 'A test page',
-                              description => 'Created with the Backpack API');
+    # Create a new page
+    my $page = $bp->create_page(
+        title       => 'A test page',
+        description => 'Created with the Backpack API'
+    );
 
-  # Get the id of the new page
-  my $page_id = $page->{page}{id};
+    # Get the id of the new page
+    my $page_id = $page->{page}{id};
 
-  # Get details of the new page (in XML format)
-  my $page_xml = $bp->show_page(id => $page->{page}{id});
+    # Get details of the new page (in XML format)
+    my $page_xml = $bp->show_page(id => $page->{page}{id});
 
-  # Rename the page
-  $bp->update_title(id => $page_id,
-                    title => 'A new title');
+    # Rename the page
+    $bp->update_title(
+        id    => $page_id,
+        title => 'A new title'
+    );
 
-  # Change the body
-  $bp->update_description(id => $page_id,
-                          description => 'Something new');
+    # Change the body
+    $bp->update_description(
+        id          => $page_id,
+        description => 'Something new'
+    );
 
-  # Remove the page
-  $bp->destroy_page(id => $page_id);
+    # Remove the page
+    $bp->destroy_page(id => $page_id);
 
 =head1 DESCRIPTION
 
-Net::Backpack provides a thin Perl wrapper around the Backpack API
-(L<http://backpackit.com/api/>). Currently it only implements the
-parts of the API that manipulate Backpack pages. Future releases
-will increase the coverage.
+Net::Backpack provides a thin Perl wrapper around the L<Backpack API|http://backpackit.com/api>.
+Currently it only implements the parts of the API that manipulate Backpack pages.
+Future releases will increase the coverage.
 
 =head2 Getting Started
 
-In order to use the Backpack API, you'll need to have a Backpack
-API token. And in order to get one of those, you'll need a Backpack
-account. But then again, the API will be pretty useless to you if
-you don't have a Backpack account to manipulate with it.
+In order to use the Backpack API, you'll need to have a Backpack API token.And in
+order to get one of those, you'll need a Backpack account.But then again, the API
+will be pretty  useless to you if you don't have a Backpack account to manipulate
+with it.
 
-You can get a Backpack account from L<http://backbackit.com/signup>.
+You can get a Backpack account from L<here|http://backbackit.com/signup>.
 
 =head2 Backback API
 
-The Backpack API is based on XML over HTTP. You send an XML message
-over HTTP to the Backpack server and the server sends a response to
-you which is also in XML. The format of the various XML requests and
-responses are defined at L<http://backpackit.com/api>.
+The Backpack API is  based on XML over HTTP. You send an XML message over HTTP to
+the Backpack server  and the server sends a response to you which is also in XML.
+The format of the various XML requests and responses are defined L<here|http://backpackit.com/api>.
 
-This module removes the need to deal with any XML. You create an
-object to talk to the Backpack server and call methods on that object
-to manipulate your Backpage pages. The values returned from Backpack
-are converted to Perl data structures before being handed back to
-you (although it is also possible to get back the raw XML).
+This module removes the need to deal with any XML.You create an object to talk to
+the Backpack server and  call  methods on that object to manipulate your Backpage
+pages. The values  returned  from Backpack are  converted to Perl data structures
+before being handed back to you (although it is also possible to get back the raw
+XML).
 
-=head1 Important Note
+=head1 IMPORTANT NOTE
 
-Net::Backpack uses XML::Simple to parse the data that is returned from
-Backpack. From version 1.10 of Net::Backpack has changed. By default we
-now pass the parameter C<ForceArray =E<gt> 1> to XML::Simple. This will
-change the Perl data structure returned by most calls.
+C<Net::Backpack>  uses  L<XML::Simple>  to  parse  the data that is returned from
+Backpack.From version 1.10 of C<Net::Backpack> has changed.By default we now pass
+the parameter C<ForceArray =E<gt> 1> to L<XML::Simple>. This will change the Perl
+data structure returned by most calls.
 
-To get the old behaviour back, you can pass the parameter C<forcearray
-=E<gt> 0> to the C<new> function.
+To get the old behaviour back, you can pass the parameter C<forcearray =E<gt> 0>
+to the C<new> function.
 
 =cut
 
@@ -92,7 +96,7 @@ use LWP::UserAgent;
 use HTTP::Request;
 use XML::Simple;
 
-our $VERSION = '1.14';
+our $VERSION = '1.15';
 
 my %data = (
 	    'list_all_pages' =>
@@ -204,14 +208,14 @@ my %data = (
 	    {
 	     url => '/ws/page/[P:page_id]/items/list',
 	     req => '<request>
-  <token>[S:token]</token> 
+  <token>[S:token]</token>
 </request>'
 	    },
 	    'create_item' =>
 	    {
 	     url => '/ws/page/[P:page_id]/items/add',
 	     req => '<request>
-  <token>[S:token]</token> 
+  <token>[S:token]</token>
   <item>
     <content>[P:item]</content>
   </item>
@@ -221,7 +225,7 @@ my %data = (
 	    {
 	     url => '/ws/page/[P:page_id]/items/update/[P:id]',
 	     req => '<request>
-  <token>[S:token]</token> 
+  <token>[S:token]</token>
   <item>
     <content>[P:item]</content>
   </item>
@@ -231,21 +235,21 @@ my %data = (
 	    {
 	     url => '/ws/page/[P:page_id]/items/toggle/[P:id]',
 	     req => '<request>
-  <token>[S:token]</token> 
+  <token>[S:token]</token>
 </request>'
 	    },
 	    'destroy_item' =>
 	    {
 	     url => '/ws/page/[P:page_id]/items/destroy/[P:id]',
 	     req => '<request>
-  <token>[S:token]</token> 
+  <token>[S:token]</token>
 </request>'
 	    },
 	    'move_item' =>
 	    {
 	     url => '/ws/page/[P:page_id]/items/move/[P:id]',
 	     req => '<request>
-  <token>[S:token]</token> 
+  <token>[S:token]</token>
   <direction>[P:direction]</direction>
 </request>'
 	    },
@@ -253,14 +257,14 @@ my %data = (
 	    {
 	     url => '/ws/page/[P:page_id]/notes/list',
 	     req => '<request>
-  <token>[S:token]</token> 
+  <token>[S:token]</token>
 </request>'
 	    },
 	    'create_note' =>
 	    {
 	     url => '/ws/page/[P:page_id]/notes/create',
 	     req => '<request>
-  <token>[S:token]</token> 
+  <token>[S:token]</token>
   <note>
     <title>[P:title]</title>
     <body>[P:body]</body>
@@ -271,7 +275,7 @@ my %data = (
 	    {
 	     url => '/ws/page/[P:page_id]/notes/update/[P:id]',
 	     req => '<request>
-  <token>[S:token]</token> 
+  <token>[S:token]</token>
   <note>
     <title>[P:title]</title>
     <body>[P:body]</body>
@@ -282,21 +286,21 @@ my %data = (
 	    {
 	     url => '/ws/page/[P:page_id]/notes/destroy/[P:id]',
 	     req => '<request>
-  <token>[S:token]</token> 
+  <token>[S:token]</token>
 </request>'
 	    },
 	    'get_tag_pages' =>
 	    {
 	     url => '/ws/tags/[P:page_id]',
 	     req => '<request>
-  <token>[S:token]</token> 
+  <token>[S:token]</token>
 </request>'
 	    },
 	    'set_page_tags' =>
 	    {
 	     url => '/ws/page/[P:page_id]/tags/tag',
 	     req => '<request>
-  <token>[S:token]</token> 
+  <token>[S:token]</token>
   <tags>[P:tags]</tags>
 </request>'
 	    },
@@ -304,7 +308,7 @@ my %data = (
 	    {
 	     url => '/ws/reminders',
 	     req => '<request>
-  <token>[S:token]</token> 
+  <token>[S:token]</token>
 </request>'
 	    },
 	    'create_reminder' =>
@@ -322,7 +326,7 @@ my %data = (
 	    {
 	     url => '/ws/reminders/update/[P:id]',
 	     req => '<request>
-  <token>[S:token]</token> 
+  <token>[S:token]</token>
   <reminder>
     <content>[P:content]</content>
 	<remind_at>[P:remind_at]</remind_at>
@@ -333,35 +337,35 @@ my %data = (
 	    {
 	     url => '/ws/reminders/destroy/[P:id]',
 	     req => '<request>
-  <token>[S:token]</token> 
+  <token>[S:token]</token>
 </request>'
 	    },
 	    'list_all_emails' =>
 	    {
 	     url => '/ws/page/[P:page_id]/emails/list',
 	     req => '<request>
-  <token>[S:token]</token> 
+  <token>[S:token]</token>
 </request>'
 	    },
 	    'show_email' =>
 	    {
 	     url => '/ws/page/[P:page_id]/emails/show/[P:id]',
 	     req => '<request>
-  <token>[S:token]</token> 
+  <token>[S:token]</token>
 </request>'
 	    },
 	    'destroy_email' =>
 	    {
 	     url => '/ws/page/[P:page_id]/emails/destroy/[P:id]',
 	     req => '<request>
-  <token>[S:token]</token> 
+  <token>[S:token]</token>
 </request>'
 	    },
 	    'export' =>
 	    {
 	     url => '/ws/account/export',
 	     req => '<request>
-  <token>[S:token]</token> 
+  <token>[S:token]</token>
 </request>'
 	    },
 	    'list_all_lists' =>
@@ -384,7 +388,7 @@ my %data = (
 	     req => '<request>
   <token>[S:token]</token>
     <name>[P:title]</name>
-</request>'	
+</request>'
 	    },
 	    'update_list' =>
 	    {
@@ -417,90 +421,117 @@ my %data = (
 
 =head1 METHODS
 
-=head2 $bp = Net::Backpack->new(token => $token, user => $user, [forcearray => 0], ssl => 0);
+=head2 new(%params)
 
-Creates a new Net::Backpack object. All communication with the
-Backpack server is made through this object.
+Creates a new Net::Backpack object. All communication with the Backpack server is
+made through this object.
 
-Takes two mandatory arguments, your Backpack API token and your
-Backpack username. Returns the new Net:Backpack object.
+Takes two mandatory arguments,your Backpack API token and your Backpack username.
+Returns the new C<Net:Backpack> object.
 
-There is also an optional parameter, forcearray. This controls the
-value of the C<ForceArray> parameter that is used by C<XML::Simple>. The 
-default value is 1.
+There is  also  an optional parameter, forcearray. This controls the value of the
+C<ForceArray> parameter that is used by C<XML::Simple>. The default value is 1.
 
-If the C<ssl> parameter is provided, then communication will take
-place over SSL.  This is required for Plus and Premium accounts.
+If the C<ssl> parameter is provided, then communication will take place over SSL.
+This is required for Plus and Premium accounts.
+
+    my $bp = Net::Backpack->new(
+        token      => $token,
+        user       => $user,
+        forcearray => 0,
+        ssl        => 0
+    );
 
 =cut
 
 sub new {
-  my $class = shift;
-  my %params = @_;
+    my $class  = shift;
+    my %params = @_;
 
-  my $self;
-  $self->{token} = $params{token}
+    my $self;
+    $self->{token} = $params{token}
     || croak "No Backpack API token passed Net::Backpack::new\n";
-  $self->{user}  = $params{user}
+    $self->{user}  = $params{user}
     || croak "No Backpack API user passed Net::Backpack::new\n";
 
-  $self->{protocol} = $params{ssl} ? 'https' : 'http';
+    $self->{protocol}   = $params{ssl} ? 'https' : 'http';
+    $self->{forcearray} = $params{forcearray} || 1;
 
-  $self->{forcearray} = $params{forcearray} || 1;
+    $self->{ua} = LWP::UserAgent->new;
+    $self->{ua}->env_proxy;
+    $self->{ua}->default_header('X-POST-DATA-FORMAT' => 'xml');
 
-  $self->{ua} = LWP::UserAgent->new;
-  $self->{ua}->env_proxy;
-  $self->{ua}->default_header('X-POST-DATA-FORMAT' => 'xml');
+    $self->{base_url} = "$self->{protocol}://$self->{user}.backpackit.com";
 
-  $self->{base_url} = "$self->{protocol}://$self->{user}.backpackit.com";
-
-  return bless $self, $class;
+    return bless $self, $class;
 }
 
-=head2 $pages = $bp->list_all_pages([xml => 1]);
+=head2 list_all_pages(%params)
 
-Get a list of all of your Backpack pages. Returns a Perl data structure
-unless the C<xml> parameter is true, in which case it returns the raw
-XML as returned by the Backpack server.
+Get a list of all of your Backpack pages.Returns a Perl data structure unless the
+C<xml> parameter is true, in which case it returns the raw XML as returned by the
+Backpack server.
+
+    my $bp = Net::Backpack->new(
+        token      => $token,
+        user       => $user,
+        forcearray => 0,
+        ssl        => 0
+    );
+
+    $pages = $bp->list_all_pages(xml => 1);
 
 =cut
 
 sub list_all_pages {
-  my $self = shift;
-  my %params = @_;
+    my $self   = shift;
+    my %params = @_;
 
-  my $req_data = $data{list_all_pages};
-  my $url = $self->{base_url} . $req_data->{url};
+    my $req_data = $data{list_all_pages};
+    my $url = $self->{base_url} . $req_data->{url};
 
-  my $req = HTTP::Request->new('POST', $url);
-  $req->content($self->_expand($req_data->{req}, %params));
+    my $req = HTTP::Request->new('POST', $url);
+    $req->content($self->_expand($req_data->{req}, %params));
 
-  return $self->_call(%params, req => $req);
+    return $self->_call(%params, req => $req);
 }
 
-=head2 $page = $bp->create_page(title => $title,
-                                [description => $desc, xml => 1]);
+=head2 create_page(%param)
 
-Create a new Backpack page with the given title and (optional)
-description. Returns a Perl data structure unless the C<xml> parameter is
-true, in which case it returns the raw XML as returned by the Backpack server.
+Create a new Backpack page with the given title and (optional) description.Returns
+a Perl data structure unless the C<xml> parameter is true,in which case it returns
+the raw XML as returned by the Backpack server.
+
+
+    my $bp = Net::Backpack->new(
+        token      => $token,
+        user       => $user,
+        forcearray => 0,
+        ssl        => 0
+    );
+
+    my $page = $bp->create_page(
+        title       => $title,
+        description => $desc,
+        xml         => 1
+    );
 
 =cut
 
 sub create_page {
-  my $self = shift;
-  my %params = @_;
+    my $self = shift;
+    my %params = @_;
 
-  croak 'No title for new page' unless $params{title};
-  $params{description} ||= '';
+    croak 'No title for new page' unless $params{title};
+    $params{description} ||= '';
 
-  my $req_data = $data{create_page};
-  my $url   = $self->{base_url} . $req_data->{url};
+    my $req_data = $data{create_page};
+    my $url   = $self->{base_url} . $req_data->{url};
 
-  my $req   = HTTP::Request->new(POST => $url);
-  $req->content($self->_expand($req_data->{req}, %params));
+    my $req   = HTTP::Request->new(POST => $url);
+    $req->content($self->_expand($req_data->{req}, %params));
 
-  return $self->_call(%params, req => $req);
+    return $self->_call(%params, req => $req);
 }
 
 =head2 $rc = $bp->show_page(id => $id, [xml => 1]);
@@ -554,7 +585,7 @@ sub destroy_page {
 =head2 $rc = $bp->update_title(id => $id, title => $title, [xml => 1]);
 
 Update the title of the given Backpack page. Returns a Perl data structure
-unless the C<xml> parameter is true, in which case it returns the raw XML 
+unless the C<xml> parameter is true, in which case it returns the raw XML
 as returned by the Backpack server.
 
 =cut
@@ -778,7 +809,7 @@ sub list_all_items {
   my %params = @_;
 
   croak 'No id' unless $params{page_id};
-  
+
   my $req_data = $data{list_all_items};
   my $url      = $self->{base_url} . $self->_expand($req_data->{url}, %params);
 
@@ -790,8 +821,8 @@ sub list_all_items {
 
 =head2 $item = $bp->create_item(page_id => $page_id, item => $item, [xml => 1]);
 
-Create a Backpack checklist item given a page id and some item content. 
-Returns a Perl data structure unless the C<xml> parameter is true, in which case 
+Create a Backpack checklist item given a page id and some item content.
+Returns a Perl data structure unless the C<xml> parameter is true, in which case
 it returns the raw XML as returned by the Backpack server.
 
 =cut
@@ -815,7 +846,7 @@ sub create_item {
 =head2 $item = $bp->update_item(page_id => $page_id, item => $item, [xml => 1]
                                 id => $item_id);
 
-Updates a Backpack checklist item given a page id, item id, and new content. 
+Updates a Backpack checklist item given a page id, item id, and new content.
 Returns a Perl data structure unless the C<xml> parameter is true, in which
 case it returns the raw XML as returned by the Backpack server.
 
@@ -841,7 +872,7 @@ sub update_item {
 =head2 $response = $bp->toggle_item(page_id => $page_id, id => $item_id,
                                     [xml => 1]);
 
-Toggles a Backpack checklist item given a page id and an item id. 
+Toggles a Backpack checklist item given a page id and an item id.
 Returns a Perl data structure unless the C<xml> parameter is true, in which
 case it returns the raw XML as returned by the Backpack server.
 
@@ -866,7 +897,7 @@ sub toggle_item {
 =head2 $response = $bp->destroy_item(page_id => $page_id, id => $item_id,
                                      [xml => 1]);
 
-Destroys a Backpack checklist item given a page id and an item id. 
+Destroys a Backpack checklist item given a page id and an item id.
 Returns a Perl data structure unless the C<xml> parameter is true, in which
 case it returns the raw XML as returned by the Backpack server.
 
@@ -888,10 +919,10 @@ sub destroy_item {
   return $self->_call(%params, req => $req);
 }
 
-=head2 $response = $bp->move_item(page_id => $page_id, id => $item_id, 
+=head2 $response = $bp->move_item(page_id => $page_id, id => $item_id,
                                   direction => $direction, [xml => 1]);
 
-Modifies the location in the list of a Backpack checklist item. Requires a 
+Modifies the location in the list of a Backpack checklist item. Requires a
 page id, a direction and an item id. Valid values for direction are
 "move_lower", "move_higher", "move_to_top", and "move_to_bottom". Returns a
 Perl data structure unless the C<xml> parameter is true, in which case it
@@ -933,7 +964,7 @@ sub list_all_notes {
   my %params = @_;
 
   croak 'No id' unless $params{page_id};
-  
+
   my $req_data = $data{list_all_notes};
   my $url      = $self->{base_url} . $self->_expand($req_data->{url}, %params);
 
@@ -961,7 +992,7 @@ sub create_note {
   croak 'No note title' unless $params{title};
 
   $params{body} ||= "";
-  
+
   my $req_data = $data{create_note};
   my $url      = $self->{base_url} . $self->_expand($req_data->{url}, %params);
 
@@ -976,7 +1007,7 @@ sub create_note {
 =head2 $note = $bp->update_note(page_id => $page_id, id => $note_id, [xml => 1]
                                 title => $title, body => $body);
 
-Updates a Backpack note given a page id, note id, and new content. 
+Updates a Backpack note given a page id, note id, and new content.
 Returns a Perl data structure unless the C<xml> parameter is true, in which
 case it returns the raw XML as returned by the Backpack server.
 
@@ -991,7 +1022,7 @@ sub update_note {
 
   $params{title} ||= "";
   $params{body} ||= "";
-    
+
   my $req_data = $data{update_note};
   my $url      = $self->{base_url} . $self->_expand($req_data->{url}, %params);
 
@@ -1004,7 +1035,7 @@ sub update_note {
 =head2 $response = $bp->destroy_note(page_id => $page_id, id => $note_id,
                                      [xml => 1]);
 
-Destroys a Backpack note given a page id and an note id. 
+Destroys a Backpack note given a page id and an note id.
 Returns a Perl data structure unless the C<xml> parameter is true, in which
 case it returns the raw XML as returned by the Backpack server.
 
@@ -1039,7 +1070,7 @@ sub get_tag_pages {
   my %params = @_;
 
   croak 'No page id' unless $params{page_id};
- 
+
   my $req_data = $data{get_tag_pages};
   my $url   = $self->{base_url} . $self->_expand($req_data->{url}, %params);
   my $req   = HTTP::Request->new(POST => $url);
@@ -1124,7 +1155,7 @@ sub create_reminder {
   croak 'No reminder content' unless $params{content};
 
   $params{remind_at} ||= "";
-  
+
   my $req_data = $data{create_reminder};
   my $url      = $self->{base_url} . $self->_expand($req_data->{url}, %params);
 
@@ -1154,12 +1185,12 @@ sub update_reminder {
   croak 'No reminder id' unless $params{id};
   unless (exists $params{content} && exists $params{remind_at}) {
     my $reminders = $self->upcoming_reminders();
-    $params{content} ||= 
+    $params{content} ||=
       $reminders->{reminders}{reminder}{$params{id}}{content};
-    $params{remind_at} ||= 
+    $params{remind_at} ||=
       $reminders->{reminders}{reminder}{$params{id}}{remind_at};
   }
-  
+
   my $req_data = $data{update_reminder};
   my $url      = $self->{base_url} . $self->_expand($req_data->{url}, %params);
 
@@ -1171,7 +1202,7 @@ sub update_reminder {
 
 =head2 $response = $bp->destroy_reminder( id => $reminder_id,  [xml => 1]);
 
-Destroys a Backpack reminder given a reminder id. 
+Destroys a Backpack reminder given a reminder id.
 Returns a Perl data structure unless the C<xml> parameter is true, in which
 case it returns the raw XML as returned by the Backpack server.
 
@@ -1205,7 +1236,7 @@ sub list_all_emails {
   my %params = @_;
 
   croak 'No id' unless $params{page_id};
-  
+
   my $req_data = $data{list_all_emails};
   my $url      = $self->{base_url} . $self->_expand($req_data->{url}, %params);
 
@@ -1215,10 +1246,10 @@ sub list_all_emails {
   return $self->_call(%params, req => $req);
 }
 
-=head2 $email = $bp->show_email(page_id => $page_id, id => $reminder_id, 
+=head2 $email = $bp->show_email(page_id => $page_id, id => $reminder_id,
                                 [xml => 1]);
 
-Returns a Backpack email item given a page id and an email id. 
+Returns a Backpack email item given a page id and an email id.
 Returns a Perl data structure unless the C<xml> parameter is true, in which
 case it returns the raw XML as returned by the Backpack server.
 
@@ -1240,10 +1271,10 @@ sub show_email {
   return $self->_call(%params, req => $req);
 }
 
-=head2 $response = $bp->destroy_email(page_id => $page_id, id => $reminder_id, 
+=head2 $response = $bp->destroy_email(page_id => $page_id, id => $reminder_id,
                                       [xml => 1]);
 
-Destroys a Backpack email item for a page given a page id and an email id. 
+Destroys a Backpack email item for a page given a page id and an email id.
 Returns a Perl data structure unless the C<xml> parameter is true, in which
 case it returns the raw XML as returned by the Backpack server.
 
@@ -1306,7 +1337,7 @@ sub list_all_lists {
   my $req = HTTP::Request->new('POST', $url);
   $req->content($self->_expand($req_data->{req}, %params));
 
-  return $self->_call(%params, req => $req);	
+  return $self->_call(%params, req => $req);
 }
 
 =head2 $list = $bp->list_this_list(page_id => $page_id, list_id => $list_id, [xml => 1]);
@@ -1464,20 +1495,6 @@ sub _expand {
   return $string;
 }
 
-=head1 TO DO
-
-=over 4
-
-=item *
-
-Improve documentation (I know, it's shameful)
-
-=item *
-
-More tests
-
-=back
-
 =head1 AUTHOR
 
 Dave Cross E<lt>dave@dave@mag-sol.comE<gt>
@@ -1485,6 +1502,12 @@ Dave Cross E<lt>dave@dave@mag-sol.comE<gt>
 Please feel free to email me to tell me how you are using the module.
 
 Lots of stuff implemented by neshura when I was being too tardy!
+
+Currently maintained by Mohammad S Anwar, C<< <mohammad.anwar at yahoo.com> >>
+
+=head1 REPOSITORY
+
+L<https://github.com/manwar/net-backpack>
 
 =head1 BUGS
 
@@ -1494,12 +1517,12 @@ Please report bugs by email to E<lt>bug-Net-Backpack@rt.cpan.orgE<gt>.
 
 Copyright (c) 2005, Dave Cross.  All Rights Reserved.
 
-This script is free software; you can redistribute it and/or
-modify it under the same terms as Perl itself.
+This script is  free software; you can redistribute it and/or modify it under the
+same terms as Perl itself.
 
 =head1 SEE ALSO
 
-L<perl>, L<http://backpackit.com/>, L<http://backpackit.com/api>
+L<http://backpackit.com/>, L<http://backpackit.com/api>
 
 =cut
 
